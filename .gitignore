@@ -1,0 +1,16 @@
+# Generated installers
+install.ps1
+install_server.ps1
+
+# Vault artifacts
+cred-store.etm
+pwm-core.dpapi
+pwm-recovery.key
+*.ses
+
+# Windows
+Thumbs.db
+.DS_Store
+
+# VSCode
+.vscode/
