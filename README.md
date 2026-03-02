@@ -1,5 +1,14 @@
 # PWM — Personal Password Manager
 
+![License](https://img.shields.io/badge/license-MIT-green)
+![PowerShell](https://img.shields.io/badge/PowerShell-5.1%20%7C%207.0+-blue)
+![Platform](https://img.shields.io/badge/platform-Windows-lightgrey)
+![Crypto](https://img.shields.io/badge/crypto-Argon2id%20%7C%20AES--256-orange)
+![Status](https://img.shields.io/badge/status-Stable-brightgreen)
+
+A single-user, offline password manager built entirely in PowerShell.  
+No cloud. No registry changes. No admin rights required.# PWM — Personal Password Manager
+
 A single-user, offline password manager built entirely in PowerShell.  
 No cloud. No registry changes. No admin rights required.
 
