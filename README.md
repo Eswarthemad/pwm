@@ -7,9 +7,6 @@
 ![Status](https://img.shields.io/badge/status-Stable-brightgreen)
 
 A single-user, offline password manager built entirely in PowerShell.  
-No cloud. No registry changes. No admin rights required.# PWM — Personal Password Manager
-
-A single-user, offline password manager built entirely in PowerShell.  
 No cloud. No registry changes. No admin rights required.
 
 Two editions available — choose based on your environment.
@@ -52,6 +49,35 @@ Designed for technically proficient users who understand the security model of l
 - Not an enterprise password management solution
 
 If you need sync across devices, team sharing, policy enforcement, or browser integration — use a dedicated password manager.
+
+---
+
+### BouncyCastle Dependency (Standard Edition Only)
+
+The Standard Edition requires `BouncyCastle.Cryptography.dll` (BouncyCastle .NET v2.x).
+
+This repository does **not** include the DLL binary.
+
+#### Build-Time Requirement
+
+Place `BouncyCastle.Cryptography.dll` in the same folder as: build\build.ps1
+
+
+The build script hashes the DLL and embeds the SHA-256 value into the sealed installer.
+
+#### Runtime Requirement
+
+After installation, the DLL will be placed at: %LOCALAPPDATA%\PWM\BouncyCastle.Cryptography.dll
+
+
+If the DLL is missing or modified, PWM will abort at startup.
+
+To verify integrity:
+
+powershell.\pwm.ps1 -security
+
+
+The -security command will report DLL hash status.
 
 ---
 
