@@ -8,6 +8,9 @@ pwm-core.dpapi
 pwm-recovery.key
 *.ses
 
+# Crypto dependency (Standard edition)
+*.dll
+
 # Windows
 Thumbs.db
 .DS_Store
