@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+
+.venv/
+.env
+
+cred-store.etm
+pwm-recovery.key
+.pwm-host-id
