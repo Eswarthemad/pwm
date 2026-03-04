@@ -1,6 +1,7 @@
 \# PWM — Personal Password Manager
 
-
+⚠ This project has not undergone a formal security audit.
+Use at your own risk for high-value secrets.
 
 Two editions of PWM are maintained here.
 
@@ -42,3 +43,13 @@ Includes:
 
 Vault formats are \*\*not cross-compatible\*\* between editions.
 
+
+PWM
+ ├─ PowerShell Edition (Windows native)
+ │   ├─ DPAPI session protection
+ │   └─ Twofish / AES options
+ │
+ └─ Python Edition (Cross-platform)
+     ├─ Argon2id
+     ├─ AES-256-GCM
+     └─ Stateless default operation
