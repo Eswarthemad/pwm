@@ -476,6 +476,32 @@ def cmd_copy(vmk: bytes, entry_id: str, field: str):
         val = None
 
 
+def cmd_list(vmk: bytes):
+    """List all entries — equivalent to search with no filter."""
+    warn_recovery_file()
+    raw     = VAULT_FILE.read_bytes()
+    vault   = read_vault_body(raw, vmk)
+    entries = vault.get('entries', [])
+    if not entries:
+        print('Vault is empty.')
+        return
+    print(f'{len(entries)} entry/entries in vault.')
+    # Reuse search display logic with all entries
+    headers = ('ID', 'Entity', 'Username', 'Notes')
+    cols    = [
+        max(len(headers[0]), max(len(e['id'])               for e in entries)),
+        max(len(headers[1]), max(len(e.get('entity',   '')) for e in entries)),
+        max(len(headers[2]), max(len(e.get('username', '')) for e in entries)),
+        max(len(headers[3]), max(len(e.get('notes',    '')) for e in entries)),
+    ]
+    fmt = '  '.join(f'{{:<{c}}}' for c in cols)
+    print(fmt.format(*headers))
+    print(fmt.format(*('-' * c for c in cols)))
+    for e in entries:
+        print(fmt.format(e['id'], e.get('entity', ''),
+                         e.get('username', ''), e.get('notes', '')))
+
+
 def cmd_update(vmk: bytes, entry_id: str):
     warn_recovery_file()
     hdr_bytes, _ = read_header()
@@ -681,7 +707,8 @@ def cmd_shell(idle_timeout: int = 5, ttl: int = 30):
 
     SHELL_HELP = textwrap.dedent("""\
       Commands available in shell:
-        search <keyword>
+        list
+      search <keyword>
         copy   <id> <password|username>
         add    [entity] [notes]
         update <id>
@@ -709,6 +736,8 @@ def cmd_shell(idle_timeout: int = 5, ttl: int = 30):
                 break
             elif cmd == 'help':
                 print(SHELL_HELP)
+            elif cmd == 'list':
+                cmd_list(vmk)
             elif cmd == 'search':
                 kw = parts[1] if len(parts) > 1 else input('Keyword: ').strip()
                 cmd_search(vmk, kw)
@@ -764,6 +793,7 @@ def cmd_help():
         -unlock                                Explicit unlock prefix (optional)
         -shell [--idle-timeout N] [--ttl N]    Interactive mode (default: 5m idle, 30m ttl)
         -add   [-entity <val>] [-notes <val>]  Add credential
+        -list                                  List all entries (auto-prompts password)
         -search <keyword>                      Search by entity or notes (auto-prompts password)
         -copy  -id <id> -field <f>             Copy field to clipboard, clears in 30s
         -update -id <id>                       Edit entry
@@ -798,6 +828,7 @@ def main():
     parser.add_argument('-shell',         action='store_true')
     parser.add_argument('-add',           action='store_true')
     parser.add_argument('-search',        type=str, default=None)
+    parser.add_argument('-list',           action='store_true')
     parser.add_argument('-copy',          action='store_true')
     parser.add_argument('-update',        action='store_true')
     parser.add_argument('-remove',        action='store_true')
@@ -814,7 +845,7 @@ def main():
 
     # If -unlock given alongside a vault command, pre-derive VMK once
     # Determine if -unlock is a prefix (paired with a vault command) or standalone
-    _vault_cmds = args.add or (args.search is not None) or args.copy                   or args.update or args.remove
+    _vault_cmds = args.add or args.list or (args.search is not None) or args.copy                   or args.update or args.remove
 
     _pre_vmk = None
     if args.unlock and _vault_cmds:
@@ -841,6 +872,8 @@ def main():
             cmd_security()
         elif args.add:
             cmd_add(need_vmk(), args.entity, args.notes)
+        elif args.list:
+            cmd_list(need_vmk())
         elif args.search is not None:
             cmd_search(need_vmk(), args.search)
         elif args.copy:

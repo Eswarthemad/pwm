@@ -16,6 +16,7 @@ param(
     [string]$search,
     [switch]$copy,
     [switch]$update,
+    [switch]$list,
     [switch]$remove,
     [switch]$security,
     [switch]$help,
@@ -572,6 +573,17 @@ function Invoke-Remove {
 }
 
 
+function Invoke-List {
+    Assert-RecoveryFileGone
+    $vmk   = Require-Session
+    $vault = Read-VaultFromFile $vmk
+    $count = @($vault.entries).Count
+    if ($count -eq 0) { Write-Host 'Vault is empty.'; return }
+    Write-Host "$count entry/entries in vault."
+    $vault.entries | Select-Object id, entity, username, notes | Format-Table -AutoSize -Wrap
+}
+
+
 function Invoke-Recover {
     Assert-VaultIntegrity
 
@@ -722,6 +734,7 @@ function Show-Help {
 
     -add  -entity <val> [-notes <val>]  Add a new credential. Prompts for username and password.
 
+    -list                               List all entries in the vault.
     -search <keyword>                   Search entries by entity or notes (case-insensitive).
                                         Returns ID, entity, username, notes. Never shows password.
                                         Use the ID returned here with -copy, -update, -remove.
@@ -771,6 +784,7 @@ try {
     elseif  ($unlock)   { Invoke-Unlock }
     elseif  ($recover)  { Invoke-Recover }
     elseif  ($add)      { Invoke-Add }
+    elseif  ($list)   { Invoke-List }
     elseif  ($PSBoundParameters.ContainsKey('search')) { Invoke-Search }
     elseif  ($copy)     { Invoke-Copy }
     elseif  ($update)   { Invoke-Update }
